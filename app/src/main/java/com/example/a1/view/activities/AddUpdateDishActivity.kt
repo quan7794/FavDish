@@ -3,8 +3,11 @@ package com.example.a1.view.activities
 import android.Manifest
 import android.app.Activity
 import android.app.Dialog
+import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.drawable.Drawable
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -13,21 +16,32 @@ import android.provider.Settings
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.core.graphics.drawable.toBitmap
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.target.Target
 import com.example.a1.R
 import com.example.a1.databinding.ActivityAddUpdateDishBinding
 import com.example.a1.databinding.DialogImageSelectionBinding
+import com.example.a1.util.Util
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.MultiplePermissionsReport
 import com.karumi.dexter.PermissionToken
 import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import timber.log.Timber
+import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
 import java.lang.Exception
+import java.util.*
 
 class AddUpdateDishActivity : AppCompatActivity(), View.OnClickListener {
     private lateinit var viewBinding: ActivityAddUpdateDishBinding
     private lateinit var dialog: Dialog
+    private var imagePath = ""
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewBinding = ActivityAddUpdateDishBinding.inflate(layoutInflater)
@@ -66,21 +80,14 @@ class AddUpdateDishActivity : AppCompatActivity(), View.OnClickListener {
         if (resultCode == Activity.RESULT_OK) {
             when (requestCode) {
                 CAMERA_CODE ->
-                    data?.extras?.let {
-                        val bitmap =  it.get("data")
-                        Glide.with(this)
-                            .load(bitmap)
-                            .centerCrop()
-                            .into(viewBinding.dishImage)
+                    data?.extras?.get("data")?.let {
+                        loadImage(it)
                         dialog.dismiss()
                     }
                 GALLERY_CODE ->
                     data?.data?.let {
                         Timber.d(it.toString())
-                        Glide.with(this)
-                            .load(it)
-                            .centerCrop()
-                            .into(viewBinding.dishImage)
+                        loadImage(it)
                         dialog.dismiss()
                     }
             }
@@ -111,7 +118,7 @@ class AddUpdateDishActivity : AppCompatActivity(), View.OnClickListener {
                         p0: MutableList<PermissionRequest>?,
                         p1: PermissionToken?
                     ) {
-                        showRationalPermissionDialog()
+                        Util.showRationalPermissionDialog(applicationContext, packageName)
                     }
 
                 }
@@ -138,7 +145,7 @@ class AddUpdateDishActivity : AppCompatActivity(), View.OnClickListener {
                         p0: MutableList<PermissionRequest>?,
                         p1: PermissionToken?
                     ) {
-                        showRationalPermissionDialog()
+                        Util.showRationalPermissionDialog(applicationContext, packageName)
                     }
 
                 }
@@ -147,34 +154,55 @@ class AddUpdateDishActivity : AppCompatActivity(), View.OnClickListener {
         dialog.show()
     }
 
-    private fun showRationalPermissionDialog() {
-        AlertDialog.Builder(this)
-            .setMessage(
-                "Look like you have turned off permissions. Tu use this feature, you have" +
-                        " to enable permissions manual. Click GO TO SETTINGS to continue."
-            )
-            .setPositiveButton("GO TO SETTINGS")
-            { _, _ ->
-                try {
-                    val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-                    intent.data = Uri.fromParts("package", packageName, null)
-                    startActivity(intent)
-                } catch (ex: Exception) {
-                    Timber.e(ex)
+    private fun loadImage(bitmap: Any) {
+        Glide.with(this)
+            .load(bitmap)
+            .listener(object : RequestListener<Drawable> {
+                override fun onLoadFailed(
+                    e: GlideException?,
+                    model: Any?,
+                    target: Target<Drawable>?,
+                    isFirstResource: Boolean
+                ): Boolean {
+                    e?.printStackTrace()
+                    return false
                 }
-            }
-            .setNegativeButton("CANCEL") { dialog, _ ->
-                dialog.dismiss()
-            }.show()
+
+                override fun onResourceReady(
+                    resource: Drawable?,
+                    model: Any?,
+                    target: Target<Drawable>?,
+                    dataSource: DataSource?,
+                    isFirstResource: Boolean
+                ): Boolean {
+                    resource?.let { it -> saveBitmapImage(it.toBitmap()) }
+                    viewBinding.dishImage.setImageDrawable(resource)
+                    return true
+                }
+            })
+            .centerCrop()
+            .into(viewBinding.dishImage)
     }
 
-    private fun saveBitmapImage(bitmap: Bitmap?) : String {
-        Timber.e("sadfa ${applicationContext.packageCodePath}")
-        Timber.e("sadfa ${applicationContext.getDatabasePath("á")}")
-        Timber.e("sadfa ${applicationContext.getFileStreamPath("á")}")
-        Timber.e("sadfa ${applicationContext.packageResourcePath}")
-        return ""
+    private fun saveBitmapImage(bitmap: Bitmap): Boolean {
+        try {
+            var file = applicationContext.getFileStreamPath("favDish")
+            file.mkdirs()
+            file = File(applicationContext.getFileStreamPath("favDish"), "${UUID.randomUUID()}.jpg")
+            val stream = FileOutputStream(file, true)
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
+            stream.flush()
+            stream.close()
+            imagePath = file.absolutePath
+            Timber.e("ImagePath: $imagePath")
+            return true
+        } catch (ex: IOException) {
+            ex.printStackTrace()
+        }
+        return false
+
     }
+
 
     companion object {
         const val CAMERA_CODE = 1000
