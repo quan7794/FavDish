@@ -35,10 +35,11 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/_8sdp"
                 android:layout_marginEnd="@dimen/_8sdp"
+                android:clickable="false"
                 android:ems="10"
+                android:focusable="false"
                 android:hint="Type"
-                android:inputType="textPersonName"
-                app:layout_constraintTop_toBottomOf="@+id/dish_title" />
+                app:layout_constraintTop_toBottomOf="@+id/label_dish_title" />
 
             <EditText
                 android:id="@+id/dish_category"
@@ -47,7 +48,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/_8sdp"
                 android:layout_marginEnd="@dimen/_8sdp"
+                android:clickable="false"
                 android:ems="10"
+                android:focusable="false"
                 android:hint="Dish Category"
                 android:inputType="textPersonName"
                 app:layout_constraintTop_toBottomOf="@+id/dish_type" />
@@ -73,7 +76,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/_8sdp"
                 android:layout_marginEnd="@dimen/_8sdp"
+                android:clickable="false"
                 android:ems="10"
+                android:focusable="false"
                 android:hint="Cooking time"
                 android:inputType="textPersonName"
                 app:layout_constraintTop_toBottomOf="@+id/dish_ingredient" />
@@ -90,8 +95,8 @@
                 android:inputType="textPersonName"
                 app:layout_constraintTop_toBottomOf="@+id/cooking_time" />
 
-            <EditText
-                android:id="@+id/dish_title"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/label_dish_title"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -101,7 +106,12 @@
                 android:ems="10"
                 android:hint="Title"
                 android:inputType="textPersonName"
-                app:layout_constraintTop_toBottomOf="@+id/image_container" />
+                app:layout_constraintTop_toBottomOf="@+id/image_container" >
+                <EditText
+                    android:id="@+id/dish_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+            </com.google.android.material.textfield.TextInputLayout>
 
             <FrameLayout
                 android:id="@+id/image_container"
@@ -117,12 +127,12 @@
                     android:src="@color/cardview_dark_background" />
 
                 <ImageView
-                    android:id="@+id/dish_add"
+                    android:id="@+id/dish_add_image"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="end|bottom"
                     android:layout_marginEnd="@dimen/_16sdp"
                     android:layout_marginBottom="@dimen/_16sdp"
-                    android:layout_gravity="end|bottom"
                     app:srcCompat="@android:drawable/ic_menu_edit" />
             </FrameLayout>
 
