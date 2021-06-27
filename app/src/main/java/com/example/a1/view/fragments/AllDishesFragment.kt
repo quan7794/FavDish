@@ -6,6 +6,7 @@ import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.a1.MainApplication
 import com.example.a1.R
@@ -19,24 +20,25 @@ import com.example.a1.viewmodel.AllDishesViewModel
 class AllDishesFragment : Fragment() {
 
     private lateinit var allDishesViewModel: AllDishesViewModel
-    private var _binding: FragmentAllDishesBinding? = null
+    private lateinit var binding: FragmentAllDishesBinding
     private val mFavDishViewModel: FavDishViewModel by viewModels {
         FavDishViewModelFactory((requireActivity().application as MainApplication).repository)
     }
 
-    private val binding get() = _binding!!
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
+    }
 
+    fun goToFavDishDetail() {
+        findNavController().navigate(R.id.action_navigation_all_dishes_to_navigation_detail_dish)
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         allDishesViewModel = ViewModelProvider(this).get(AllDishesViewModel::class.java)
-        _binding = FragmentAllDishesBinding.inflate(inflater, container, false)
+        binding = FragmentAllDishesBinding.inflate(inflater, container, false)
 
         return binding.root
     }
@@ -72,10 +74,5 @@ class AllDishesFragment : Fragment() {
             }
         }
         return super.onOptionsItemSelected(item)
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
     }
 }
