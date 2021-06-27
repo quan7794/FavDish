@@ -24,8 +24,6 @@ class AllDishesFragment : Fragment() {
         FavDishViewModelFactory((requireActivity().application as MainApplication).repository)
     }
 
-    // This property is only valid between onCreateView and
-    // onDestroyView.
     private val binding get() = _binding!!
 
     override fun onCreate(savedInstanceState: Bundle?) {
