@@ -6,8 +6,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.example.a1.R
 import com.example.a1.databinding.FragmentDetailDishBinding
+import timber.log.Timber
 
 class DetailDishFragment : Fragment() {
     private lateinit var detailBinding: FragmentDetailDishBinding
@@ -19,5 +21,11 @@ class DetailDishFragment : Fragment() {
         detailBinding = FragmentDetailDishBinding.inflate(inflater,container, false)
 
         return detailBinding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        val args: DetailDishFragmentArgs by navArgs()
+        detailBinding.dishTitle.text = args.dishDetails.toString()
     }
 }

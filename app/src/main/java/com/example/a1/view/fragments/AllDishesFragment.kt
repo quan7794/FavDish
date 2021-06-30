@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.example.a1.MainApplication
 import com.example.a1.R
 import com.example.a1.databinding.FragmentAllDishesBinding
+import com.example.a1.model.entities.FavDish
 import com.example.a1.view.activities.AddUpdateDishActivity
 import com.example.a1.view.activities.MainActivity
 import com.example.a1.view.adapers.FavDishListAdapter
@@ -31,17 +32,22 @@ class AllDishesFragment : Fragment() {
         setHasOptionsMenu(true)
     }
 
-    fun goToFavDishDetail() {
-        findNavController().navigate(R.id.action_navigation_all_dishes_to_navigation_detail_dish)
+    fun goToFavDishDetail(favDish: FavDish) {
+        findNavController()
+            .navigate(
+                AllDishesFragmentDirections.actionNavigationAllDishesToNavigationDetailDish(
+                        favDish
+                    )
+            )
         if (requireActivity() is MainActivity) {
-            (requireActivity() as MainActivity).hideBottomNav()
+            (activity as MainActivity).hideBottomNav()
         }
     }
 
     override fun onResume() {
         super.onResume()
         if (requireActivity() is MainActivity) {
-            (requireActivity() as MainActivity).showBottomNav()
+            (activity as MainActivity).showBottomNav()
         }
     }
 

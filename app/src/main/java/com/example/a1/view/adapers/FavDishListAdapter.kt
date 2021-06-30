@@ -32,7 +32,7 @@ class FavDishListAdapter(private val fragment: Fragment) :
         holder.dishTitle.text = dish.title
         holder.itemView.setOnClickListener {
             if (fragment is AllDishesFragment) {
-                fragment.goToFavDishDetail()
+                fragment.goToFavDishDetail(dish)
             }
         }
     }

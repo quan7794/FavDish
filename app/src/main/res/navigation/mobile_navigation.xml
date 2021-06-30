@@ -9,7 +9,7 @@
         android:id="@+id/navigation_all_dishes"
         android:name="com.example.a1.view.fragments.AllDishesFragment"
         android:label="@string/title_all_dishes"
-        tools:layout="@layout/fragment_all_dishes" >
+        tools:layout="@layout/fragment_all_dishes">
         <action
             android:id="@+id/action_navigation_all_dishes_to_navigation_detail_dish"
             app:destination="@id/navigation_detail_dish" />
@@ -31,5 +31,9 @@
         android:id="@+id/navigation_detail_dish"
         android:name="com.example.a1.view.fragments.DetailDishFragment"
         android:label="@string/title_detail_dish"
-        tools:layout="@layout/fragment_detail_dish"/>
+        tools:layout="@layout/fragment_detail_dish">
+        <argument
+            android:name="dishDetails"
+            app:argType="com.example.a1.model.entities.FavDish" />
+    </fragment>
 </navigation>
