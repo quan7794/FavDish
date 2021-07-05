@@ -1,13 +1,22 @@
 package com.example.a1.viewmodel
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.*
+import com.example.a1.model.database.FavDishRepository
+import java.lang.IllegalArgumentException
 
-class FavoriteDishesViewModel : ViewModel() {
+class FavoriteDishesViewModel(repository: FavDishRepository) : ViewModel() {
 
-    private val _text = MutableLiveData<String>().apply {
-        value = "This is dashboard Fragment"
+    val favoriteList = repository.allFavoriteDishesList.asLiveData()
+}
+
+
+@Suppress("UNCHECKED_CAST")
+class FavoriteDishesViewModelFactory(private val repository: FavDishRepository): ViewModelProvider.Factory{
+    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(FavoriteDishesViewModel::class.java)) {
+            return FavoriteDishesViewModel(repository) as T
+        }
+        throw IllegalArgumentException("Unknown ViewModel")
     }
-    val text: LiveData<String> = _text
+
 }

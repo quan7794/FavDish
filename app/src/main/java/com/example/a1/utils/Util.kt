@@ -8,18 +8,22 @@ import android.net.Uri
 import android.provider.Settings
 import android.widget.ImageView
 import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat.getDrawable
 import androidx.core.content.ContextCompat.startActivity
 import androidx.core.graphics.drawable.toBitmap
+import androidx.databinding.BindingAdapter
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
+import com.example.a1.R
 import timber.log.Timber
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.lang.Exception
+
 
 class Util {
     companion object {
@@ -95,4 +99,12 @@ class Util {
         }
     }
 
+}
+
+@BindingAdapter("setFavoriteIcon")
+fun setFavoriteIcon(view: ImageView, isFavorite: Boolean) {
+    if (isFavorite)
+        view.setImageResource(R.drawable.ic_favorite_selected)
+    else
+        view.setImageResource(R.drawable.ic_favorite_unselected)
 }

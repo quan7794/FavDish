@@ -19,6 +19,11 @@
       </option>
       <option name="CODE_STYLE_DEFAULTS" value="KOTLIN_OFFICIAL" />
     </JetCodeStyleSettings>
+    <codeStyleSettings language="JAVA">
+      <option name="RIGHT_MARGIN" value="200" />
+      <option name="KEEP_LINE_BREAKS" value="false" />
+      <option name="WRAP_ON_TYPING" value="0" />
+    </codeStyleSettings>
     <codeStyleSettings language="XML">
       <option name="FORCE_REARRANGE_MODE" value="1" />
       <indentOptions>
@@ -125,6 +130,8 @@
     </codeStyleSettings>
     <codeStyleSettings language="kotlin">
       <option name="CODE_STYLE_DEFAULTS" value="KOTLIN_OFFICIAL" />
+      <option name="RIGHT_MARGIN" value="200" />
+      <option name="KEEP_LINE_BREAKS" value="false" />
     </codeStyleSettings>
   </code_scheme>
 </component>
