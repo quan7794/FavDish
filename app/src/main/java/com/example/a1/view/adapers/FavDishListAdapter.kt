@@ -1,14 +1,18 @@
 package com.example.a1.view.adapers
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
+import android.widget.PopupMenu
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.example.a1.R
 import com.example.a1.databinding.ItemDishBinding
 import com.example.a1.model.entities.FavDish
 import com.example.a1.view.fragments.AllDishesFragment
 import com.example.a1.view.fragments.FavoriteDishesFragment
+import timber.log.Timber
 
 class FavDishListAdapter(private val fragment: Fragment) :
     RecyclerView.Adapter<FavDishListAdapter.DishViewHolder>() {
@@ -18,6 +22,7 @@ class FavDishListAdapter(private val fragment: Fragment) :
     class DishViewHolder(view: ItemDishBinding) : RecyclerView.ViewHolder(view.root) {
         val dishImage = view.ivDishImage
         val dishTitle = view.tvDishTitle
+        val dishOptionMenu = view.btnDishOption
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DishViewHolder {
@@ -38,6 +43,33 @@ class FavDishListAdapter(private val fragment: Fragment) :
                 fragment.goToFavDishDetail(dish)
             }
         }
+        if (fragment is AllDishesFragment) {
+            holder.dishOptionMenu.visibility = View.VISIBLE
+            holder.dishOptionMenu.setOnClickListener {
+                Timber.e("Clicked on ${holder.dishTitle.text}")
+                val popUp = PopupMenu(fragment.context, holder.dishOptionMenu)
+                popUp.menuInflater.inflate(R.menu.menu_dish_options, popUp.menu)
+
+                popUp.setOnMenuItemClickListener {
+                    when (it.itemId){
+                        R.id.action_edit_dish ->{
+                            Timber.e("Clicked on action_edit_dish")
+                        }
+                        R.id.action_delete_dish -> {
+                            Timber.e("Clicked on action_delete_dish")
+                        }
+                        R.id.action_like_dish -> {
+                            Timber.e("Clicked on action_like_dish")
+                        }
+                    }
+                    true
+                }
+                popUp.show()
+            }
+        } else {
+            holder.dishOptionMenu.visibility = View.GONE
+        }
+
     }
 
     override fun getItemCount(): Int {
