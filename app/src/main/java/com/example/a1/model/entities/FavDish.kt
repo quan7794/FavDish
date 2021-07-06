@@ -8,7 +8,9 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 @Entity(tableName = "fav_dishes_table" )
-data class FavDish(@ColumnInfo val imagePath: String, @ColumnInfo(name = "image_source") val imageSource: String,
+data class FavDish(
+    @ColumnInfo val imagePath: String,
+    @ColumnInfo(name = "image_source") val imageSource: String,
     @ColumnInfo val title: String,
     @ColumnInfo val type: String,
     @ColumnInfo val category: String,

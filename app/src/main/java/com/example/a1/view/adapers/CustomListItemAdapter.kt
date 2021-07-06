@@ -7,11 +7,7 @@ import com.example.a1.databinding.DialogCustomItemBinding
 import com.example.a1.view.activities.AddUpdateDishActivity
 import timber.log.Timber
 
-class CustomListItemAdapter(
-    private val activity: Activity,
-    private val listItems: List<String>,
-    private val listType: String
-) : RecyclerView.Adapter<CustomListItemAdapter.ViewHolder>() {
+class CustomListItemAdapter(private val activity: Activity, private val listItems: List<String>, private val listType: String) : RecyclerView.Adapter<CustomListItemAdapter.ViewHolder>() {
 
     class ViewHolder(view: DialogCustomItemBinding) : RecyclerView.ViewHolder(view.root) {
         val tvText = view.itemContent

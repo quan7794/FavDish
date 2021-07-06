@@ -1,5 +1,6 @@
 package com.example.a1.view.adapers
 
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,6 +11,8 @@ import com.bumptech.glide.Glide
 import com.example.a1.R
 import com.example.a1.databinding.ItemDishBinding
 import com.example.a1.model.entities.FavDish
+import com.example.a1.utils.Constants
+import com.example.a1.view.activities.AddUpdateDishActivity
 import com.example.a1.view.fragments.AllDishesFragment
 import com.example.a1.view.fragments.FavoriteDishesFragment
 import timber.log.Timber
@@ -54,6 +57,9 @@ class FavDishListAdapter(private val fragment: Fragment) :
                     when (it.itemId){
                         R.id.action_edit_dish ->{
                             Timber.e("Clicked on action_edit_dish")
+                            val intent = Intent(fragment.context, AddUpdateDishActivity::class.java)
+                            intent.putExtra(Constants.DISH_UPDATE, dish)
+                            fragment.requireActivity().startActivity(intent)
                         }
                         R.id.action_delete_dish -> {
                             Timber.e("Clicked on action_delete_dish")

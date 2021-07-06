@@ -11,6 +11,7 @@ import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.bumptech.glide.Glide
 import com.example.a1.MainApplication
 import com.example.a1.R
 import com.example.a1.databinding.ActivityAddUpdateDishBinding
@@ -31,33 +32,55 @@ import timber.log.Timber
 import java.util.*
 
 class AddUpdateDishActivity : AppCompatActivity(), View.OnClickListener {
+    private var editDish: FavDish? = null
     private lateinit var viewBinding: ActivityAddUpdateDishBinding
     private lateinit var customSelectionDialog: Dialog
     private lateinit var customListDialog: Dialog
+    private var isEdit = false
     private val mViewModel: FavDishViewModel by viewModels {
         FavDishViewModelFactory((application as MainApplication).repository)
     }
 
-    private var imagePath = ""
+    private var mImagePath = ""
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewBinding = ActivityAddUpdateDishBinding.inflate(layoutInflater)
         setContentView(viewBinding.root)
+
+        if (intent.hasExtra(Constants.DISH_UPDATE)) {
+            isEdit = true
+            editDish = intent.getParcelableExtra(Constants.DISH_UPDATE)
+        }
         initActionBar()
+        initData()
+    }
+
+    private fun initData() {
         viewBinding.dishAddImage.setOnClickListener(this)
         viewBinding.dishType.setOnClickListener(this)
         viewBinding.dishCategory.setOnClickListener(this)
         viewBinding.cookingTime.setOnClickListener(this)
         viewBinding.addDish.setOnClickListener(this)
+        editDish?.let {
+            viewBinding.apply {
+                addDish.text = getString(R.string.update_dish)
+                dishTitle.setText(it.title)
+                dishType.setText(it.type)
+                dishCategory.setText(it.category)
+                directionToCook.setText(it.directionToCook)
+                cookingTime.setText(it.cookingTime)
+                dishIngredient.setText(it.ingredients)
+                Glide.with(this@AddUpdateDishActivity).load(it.imagePath).into(dishImage)
+                mImagePath = it.imagePath
+            }
+
+        }
     }
 
     private fun initActionBar() {
         setSupportActionBar(viewBinding.actionBar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        viewBinding.actionBar.setNavigationOnClickListener {
-            onBackPressed()
-        }
-
+        if (isEdit) supportActionBar?.title = getString(R.string.edit_dish)
     }
 
     override fun onClick(v: View?) {
@@ -71,59 +94,68 @@ class AddUpdateDishActivity : AppCompatActivity(), View.OnClickListener {
                 R.id.dish_type -> {
                     Timber.d("Add dish_type")
                     customItemsDialog(
-                        resources.getString(R.string.dish_type),
-                        Constants.getDishTypes(),
-                        Constants.DISH_TYPE
+                        resources.getString(R.string.dish_type), Constants.getDishTypes(), Constants.DISH_TYPE
                     )
                     return
                 }
                 R.id.dish_category -> {
                     Timber.d("Add dish_category")
                     customItemsDialog(
-                        resources.getString(R.string.dish_category),
-                        Constants.getDishCategories(),
-                        Constants.DISH_CATEGORY
+                        resources.getString(R.string.dish_category), Constants.getDishCategories(), Constants.DISH_CATEGORY
                     )
                     return
                 }
                 R.id.cooking_time -> {
                     Timber.d("Add cooking_time")
                     customItemsDialog(
-                        resources.getString(R.string.select_cooking_time),
-                        Constants.getDishCookTime(),
-                        Constants.DISH_COOKING_TIME
+                        resources.getString(R.string.select_cooking_time), Constants.getDishCookTime(), Constants.DISH_COOKING_TIME
                     )
                     return
                 }
                 R.id.add_dish -> {
-                    val newDish = FavDish(
-                        imagePath,
-                        Constants.DISH_IMAGE_SOURCE_LOCAL,
+                    var id = 0
+                    var isFavorite = false
+                    var imageSource = Constants.DISH_IMAGE_SOURCE_LOCAL
+                    editDish?.let {
+                        id = it.id
+                        isFavorite = it.favoriteDish
+                        imageSource = it.imageSource
+                    }
+
+                    val resultDish = FavDish(
+                        mImagePath,
+                        imageSource,
                         viewBinding.dishTitle.text.toString(),
                         viewBinding.dishType.text.toString(),
                         viewBinding.dishCategory.text.toString(),
                         viewBinding.dishIngredient.text.toString(),
                         viewBinding.cookingTime.text.toString(),
                         viewBinding.directionToCook.text.toString(),
-                        false
+                        isFavorite,
+                        id
                     )
                     try {
-                        if (isValidate(newDish)) {
-                            mViewModel.insert(newDish)
-                            Timber.d("Add dish")
-                            Toast.makeText(this, "Add dish $newDish", Toast.LENGTH_SHORT).show()
+                        if (isValidate(resultDish)) {
+                            if (!isEdit) {
+                                mViewModel.insert(resultDish)
+                                Timber.d("Add dish")
+                                Toast.makeText(this, "Add dish $resultDish", Toast.LENGTH_SHORT).show()
+                            } else {
+                                mViewModel.update(resultDish)
+                                Timber.d("Update dish")
+                                Toast.makeText(this, "Update dish $resultDish", Toast.LENGTH_SHORT).show()
+                            }
                             finish()
                             return
 
                         } else {
-                            Timber.e("Add dish error $newDish")
-                            Toast.makeText(this, "Add dish error $newDish", Toast.LENGTH_SHORT).show()
+                            Timber.e("Dish validate fail, please update missing or wrong value. $resultDish")
+                            Toast.makeText(this, "Dish validate fail, please update missing or wrong value. $resultDish", Toast.LENGTH_SHORT).show()
                         }
                     } catch (ex: Exception) {
-                        Timber.e("Add dish error $ex")
-                        Toast.makeText(this, "Add dish error $ex", Toast.LENGTH_SHORT).show()
+                        Timber.e("Add/Update dish error $ex")
+                        Toast.makeText(this, "Add/Update dish error $ex", Toast.LENGTH_SHORT).show()
                     }
-
                     return
                 }
                 else -> {
@@ -134,13 +166,7 @@ class AddUpdateDishActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun isValidate(favDish: FavDish): Boolean {
-        return favDish.category != "" &&
-                favDish.cookingTime != "" &&
-                favDish.directionToCook != "" &&
-                favDish.imagePath != "" &&
-                favDish.ingredients != "" &&
-                favDish.type != "" &&
-                favDish.title != ""
+        return favDish.category != "" && favDish.cookingTime != "" && favDish.directionToCook != "" && favDish.imagePath != "" && favDish.ingredients != "" && favDish.type != "" && favDish.title != ""
     }
 
     fun selectedListItem(item: String, selection: String) {
@@ -165,24 +191,20 @@ class AddUpdateDishActivity : AppCompatActivity(), View.OnClickListener {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == Activity.RESULT_OK) {
             when (requestCode) {
-                CAMERA_CODE ->
-                    data?.extras?.get("data")?.let {
-                        val imageName = UUID.randomUUID().toString()
-                        imagePath =
-                            "${applicationContext.filesDir.absolutePath}/favDish/$imageName.jpg"
-                        Timber.e(imagePath)
-                        Util.loadImage(this, it, viewBinding.dishImage, imageName)
-                        customSelectionDialog.dismiss()
-                    }
-                GALLERY_CODE ->
-                    data?.data?.let {
-                        val imageName = UUID.randomUUID().toString()
-                        imagePath =
-                            "${applicationContext.filesDir.absolutePath}/favDish/$imageName.jpg"
-                        Timber.e(imagePath)
-                        Util.loadImage(this, it, viewBinding.dishImage, imageName)
-                        customSelectionDialog.dismiss()
-                    }
+                CAMERA_CODE -> data?.extras?.get("data")?.let {
+                    val imageName = UUID.randomUUID().toString()
+                    mImagePath = "${applicationContext.filesDir.absolutePath}/favDish/$imageName.jpg"
+                    Timber.e(mImagePath)
+                    Util.loadImage(this, it, viewBinding.dishImage, imageName)
+                    customSelectionDialog.dismiss()
+                }
+                GALLERY_CODE -> data?.data?.let {
+                    val imageName = UUID.randomUUID().toString()
+                    mImagePath = "${applicationContext.filesDir.absolutePath}/favDish/$imageName.jpg"
+                    Timber.e(mImagePath)
+                    Util.loadImage(this, it, viewBinding.dishImage, imageName)
+                    customSelectionDialog.dismiss()
+                }
             }
         }
     }
@@ -193,56 +215,46 @@ class AddUpdateDishActivity : AppCompatActivity(), View.OnClickListener {
         customSelectionDialog.setContentView(binding.root)
         binding.cameraSelect.setOnClickListener {
             Toast.makeText(this, "Camera select", Toast.LENGTH_SHORT).show()
-            Dexter.withContext(this)
-                .withPermissions(
-                    Manifest.permission.CAMERA,
-                    Manifest.permission.READ_EXTERNAL_STORAGE
-                )
-                .withListener(object : MultiplePermissionsListener {
-                    override fun onPermissionsChecked(report: MultiplePermissionsReport) {
-                        if (report.areAllPermissionsGranted()) {
-                            val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-                            startActivityForResult(intent, CAMERA_CODE)
+            Dexter.withContext(this).withPermissions(
+                Manifest.permission.CAMERA, Manifest.permission.READ_EXTERNAL_STORAGE
+            ).withListener(object : MultiplePermissionsListener {
+                override fun onPermissionsChecked(report: MultiplePermissionsReport) {
+                    if (report.areAllPermissionsGranted()) {
+                        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+                        startActivityForResult(intent, CAMERA_CODE)
 
-                        }
                     }
-
-                    override fun onPermissionRationaleShouldBeShown(
-                        p0: MutableList<PermissionRequest>?,
-                        p1: PermissionToken?
-                    ) {
-                        Util.showRationalPermissionDialog(this@AddUpdateDishActivity, packageName)
-                    }
-
                 }
-                ).onSameThread().check()
+
+                override fun onPermissionRationaleShouldBeShown(
+                    p0: MutableList<PermissionRequest>?, p1: PermissionToken?
+                ) {
+                    Util.showRationalPermissionDialog(this@AddUpdateDishActivity, packageName)
+                }
+
+            }).onSameThread().check()
         }
         binding.gallerySelect.setOnClickListener {
             Toast.makeText(this, "Gallery select", Toast.LENGTH_SHORT).show()
-            Dexter.withContext(this)
-                .withPermissions(
-                    Manifest.permission.READ_EXTERNAL_STORAGE
-                )
-                .withListener(object : MultiplePermissionsListener {
-                    override fun onPermissionsChecked(report: MultiplePermissionsReport) {
-                        if (report.areAllPermissionsGranted()) {
-                            val intent = Intent(
-                                Intent.ACTION_PICK,
-                                MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-                            )
-                            startActivityForResult(intent, GALLERY_CODE)
-                        }
+            Dexter.withContext(this).withPermissions(
+                Manifest.permission.READ_EXTERNAL_STORAGE
+            ).withListener(object : MultiplePermissionsListener {
+                override fun onPermissionsChecked(report: MultiplePermissionsReport) {
+                    if (report.areAllPermissionsGranted()) {
+                        val intent = Intent(
+                            Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+                        )
+                        startActivityForResult(intent, GALLERY_CODE)
                     }
-
-                    override fun onPermissionRationaleShouldBeShown(
-                        p0: MutableList<PermissionRequest>?,
-                        p1: PermissionToken?
-                    ) {
-                        Util.showRationalPermissionDialog(this@AddUpdateDishActivity, packageName)
-                    }
-
                 }
-                ).onSameThread().check()
+
+                override fun onPermissionRationaleShouldBeShown(
+                    p0: MutableList<PermissionRequest>?, p1: PermissionToken?
+                ) {
+                    Util.showRationalPermissionDialog(this@AddUpdateDishActivity, packageName)
+                }
+
+            }).onSameThread().check()
         }
         customSelectionDialog.show()
     }

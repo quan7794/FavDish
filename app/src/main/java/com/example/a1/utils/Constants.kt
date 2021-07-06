@@ -8,6 +8,8 @@ object Constants {
     const val DISH_IMAGE_SOURCE_LOCAL ="Local"
     const val DISH_IMAGE_SOURCE_REMOTE ="Online"
 
+    const val DISH_UPDATE ="updateDish"
+
     fun getDishTypes() :ArrayList<String> {
         val dishTypes = ArrayList<String>()
 

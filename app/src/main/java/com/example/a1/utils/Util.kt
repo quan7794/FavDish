@@ -74,8 +74,8 @@ class Util {
                         resource?.let {
                             saveBitmapImage(context, it.toBitmap(), fileName)
                         }
-                        des.setImageDrawable(resource)
-                        return true
+//                        des.setImageDrawable(resource)
+                        return false
                     }
                 })
                 .into(des)

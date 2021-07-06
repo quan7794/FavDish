@@ -59,15 +59,15 @@
                 android:id="@+id/dish_ingredient"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/_100sdp"
+                android:layout_height="@dimen/_50sdp"
                 android:layout_marginStart="@dimen/_8sdp"
                 android:layout_marginEnd="@dimen/_8sdp"
                 android:ems="10"
+                android:maxLines="3"
                 android:gravity="start|top"
-                android:hint="Dish Ingredient"
+                android:hint="@string/dish_ingredient"
                 android:inputType="textMultiLine"
-                app:layout_constraintTop_toBottomOf="@+id/dish_category"
-                tools:layout_editor_absoluteY="204dp" />
+                app:layout_constraintTop_toBottomOf="@+id/dish_category" />
 
             <EditText
                 android:id="@+id/cooking_time"
@@ -79,7 +79,7 @@
                 android:clickable="false"
                 android:ems="10"
                 android:focusable="false"
-                android:hint="Cooking time"
+                android:hint="@string/cooking_time"
                 android:inputType="textPersonName"
                 app:layout_constraintTop_toBottomOf="@+id/dish_ingredient" />
 
@@ -91,7 +91,7 @@
                 android:layout_marginStart="@dimen/_8sdp"
                 android:layout_marginEnd="@dimen/_8sdp"
                 android:ems="10"
-                android:hint="Direction to cook"
+                android:hint="@string/direction_to_cook"
                 android:inputType="textPersonName"
                 app:layout_constraintTop_toBottomOf="@+id/cooking_time" />
 
@@ -104,7 +104,7 @@
                 android:layout_marginTop="@dimen/_16sdp"
                 android:layout_marginEnd="@dimen/_8sdp"
                 android:ems="10"
-                android:hint="Title"
+                android:hint="@string/title"
                 android:inputType="textPersonName"
                 app:layout_constraintTop_toBottomOf="@+id/image_container" >
                 <EditText
