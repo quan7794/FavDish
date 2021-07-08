@@ -65,7 +65,7 @@ class AllDishesFragment : Fragment() {
             if (it.isNotEmpty()) {
                 binding.rvDishesList.visibility = View.VISIBLE
                 binding.tvNoItem.visibility = View.GONE
-                favDishAdapter.updateDishes(it)
+                favDishAdapter.submitList(it)
             } else {
                 binding.rvDishesList.visibility = View.GONE
                 binding.tvNoItem.visibility = View.VISIBLE

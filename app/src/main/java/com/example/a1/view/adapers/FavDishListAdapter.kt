@@ -6,6 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupMenu
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.a1.R
@@ -17,9 +19,7 @@ import com.example.a1.view.fragments.AllDishesFragment
 import com.example.a1.view.fragments.FavoriteDishesFragment
 import timber.log.Timber
 
-class FavDishListAdapter(private val fragment: Fragment) : RecyclerView.Adapter<FavDishListAdapter.DishViewHolder>() {
-
-    private var dishes = listOf<FavDish>()
+class FavDishListAdapter(private val fragment: Fragment) : ListAdapter<FavDish, FavDishListAdapter.DishViewHolder>(DiffCallBack()) {
 
     class DishViewHolder(view: ItemDishBinding) : RecyclerView.ViewHolder(view.root) {
         val dishImage = view.ivDishImage
@@ -33,7 +33,7 @@ class FavDishListAdapter(private val fragment: Fragment) : RecyclerView.Adapter<
     }
 
     override fun onBindViewHolder(holder: DishViewHolder, position: Int) {
-        val dish = dishes[position]
+        val dish = getItem(position)
         Glide.with(fragment).load(dish.imagePath).into(holder.dishImage)
         holder.dishTitle.text = dish.title
         holder.itemView.setOnClickListener {
@@ -70,15 +70,15 @@ class FavDishListAdapter(private val fragment: Fragment) : RecyclerView.Adapter<
         } else {
             holder.dishOptionMenu.visibility = View.GONE
         }
+    }
+}
 
+class DiffCallBack : DiffUtil.ItemCallback<FavDish>() {
+    override fun areItemsTheSame(oldItem: FavDish, newItem: FavDish): Boolean {
+        return oldItem.id == newItem.id
     }
 
-    override fun getItemCount(): Int {
-        return dishes.size
-    }
-
-    fun updateDishes(list: List<FavDish>) {
-        dishes = list
-        notifyDataSetChanged()
+    override fun areContentsTheSame(oldItem: FavDish, newItem: FavDish): Boolean {
+        return oldItem == newItem
     }
 }
