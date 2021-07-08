@@ -1,7 +1,6 @@
 package com.example.a1.view.activities
 
 import android.Manifest
-import android.app.Activity
 import android.app.Dialog
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
@@ -9,6 +8,7 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.view.View
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
@@ -29,7 +29,7 @@ import com.karumi.dexter.PermissionToken
 import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import timber.log.Timber
-import java.util.*
+import java.util.UUID
 
 class AddUpdateDishActivity : AppCompatActivity(), View.OnClickListener {
     private var editDish: FavDish? = null
@@ -40,8 +40,30 @@ class AddUpdateDishActivity : AppCompatActivity(), View.OnClickListener {
     private val mViewModel: FavDishViewModel by viewModels {
         FavDishViewModelFactory((application as MainApplication).repository)
     }
-
     private var mImagePath = ""
+
+    private val cameraResultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        if (it.resultCode == RESULT_OK) {
+            it.data?.extras?.get("data")?.let { image ->
+                val imageName = UUID.randomUUID().toString()
+                mImagePath = "${applicationContext.filesDir.absolutePath}/favDish/$imageName.jpg"
+                Timber.e(mImagePath)
+                Util.loadImage(this, image, viewBinding.dishImage, imageName)
+                customSelectionDialog.dismiss()
+            }
+        }
+    }
+
+    private val galleryResultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        it.data?.data?.let { imageUri ->
+            val imageName = UUID.randomUUID().toString()
+            mImagePath = "${applicationContext.filesDir.absolutePath}/favDish/$imageName.jpg"
+            Timber.e(mImagePath)
+            Util.loadImage(this, imageUri, viewBinding.dishImage, imageName)
+            customSelectionDialog.dismiss()
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewBinding = ActivityAddUpdateDishBinding.inflate(layoutInflater)
@@ -187,28 +209,6 @@ class AddUpdateDishActivity : AppCompatActivity(), View.OnClickListener {
 
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode == Activity.RESULT_OK) {
-            when (requestCode) {
-                CAMERA_CODE -> data?.extras?.get("data")?.let {
-                    val imageName = UUID.randomUUID().toString()
-                    mImagePath = "${applicationContext.filesDir.absolutePath}/favDish/$imageName.jpg"
-                    Timber.e(mImagePath)
-                    Util.loadImage(this, it, viewBinding.dishImage, imageName)
-                    customSelectionDialog.dismiss()
-                }
-                GALLERY_CODE -> data?.data?.let {
-                    val imageName = UUID.randomUUID().toString()
-                    mImagePath = "${applicationContext.filesDir.absolutePath}/favDish/$imageName.jpg"
-                    Timber.e(mImagePath)
-                    Util.loadImage(this, it, viewBinding.dishImage, imageName)
-                    customSelectionDialog.dismiss()
-                }
-            }
-        }
-    }
-
     private fun customSelectionDialog() {
         customSelectionDialog = Dialog(this)
         val binding = DialogImageSelectionBinding.inflate(layoutInflater)
@@ -221,7 +221,7 @@ class AddUpdateDishActivity : AppCompatActivity(), View.OnClickListener {
                 override fun onPermissionsChecked(report: MultiplePermissionsReport) {
                     if (report.areAllPermissionsGranted()) {
                         val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-                        startActivityForResult(intent, CAMERA_CODE)
+                        cameraResultLauncher.launch(intent)
 
                     }
                 }
@@ -241,10 +241,8 @@ class AddUpdateDishActivity : AppCompatActivity(), View.OnClickListener {
             ).withListener(object : MultiplePermissionsListener {
                 override fun onPermissionsChecked(report: MultiplePermissionsReport) {
                     if (report.areAllPermissionsGranted()) {
-                        val intent = Intent(
-                            Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-                        )
-                        startActivityForResult(intent, GALLERY_CODE)
+                        val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+                        galleryResultLauncher.launch(intent)
                     }
                 }
 
@@ -268,10 +266,5 @@ class AddUpdateDishActivity : AppCompatActivity(), View.OnClickListener {
         val adapter = CustomListItemAdapter(this, itemsList, selection)
         binding.dialogContent.adapter = adapter
         customListDialog.show()
-    }
-
-    companion object {
-        const val CAMERA_CODE = 1000
-        const val GALLERY_CODE = 1001
     }
 }

@@ -73,6 +73,9 @@ class AllDishesFragment : Fragment() {
         }
     }
 
+    fun deleteDish(dish: FavDish) {
+        mFavDishViewModel.delete(dish)
+    }
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_add_dishes, menu)
         super.onCreateOptionsMenu(menu, inflater)

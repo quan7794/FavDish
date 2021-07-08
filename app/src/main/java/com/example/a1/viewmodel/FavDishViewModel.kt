@@ -12,7 +12,6 @@ import kotlin.concurrent.thread
 
 class FavDishViewModel(private val repository: FavDishRepository): ViewModel() {
 
-
     fun insert(dish: FavDish) = viewModelScope.launch {
         repository.insertFavDishData(dish)
     }
@@ -20,6 +19,11 @@ class FavDishViewModel(private val repository: FavDishRepository): ViewModel() {
     fun update(dish: FavDish) = viewModelScope.launch {
         repository.updateFavDishData(dish)
     }
+
+    fun delete(dish: FavDish) = viewModelScope.launch {
+        repository.deleteDish(dish)
+    }
+
     val allDishesList = repository.allDishesList.asLiveData()
 
 

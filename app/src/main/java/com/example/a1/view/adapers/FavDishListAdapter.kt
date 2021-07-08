@@ -17,8 +17,7 @@ import com.example.a1.view.fragments.AllDishesFragment
 import com.example.a1.view.fragments.FavoriteDishesFragment
 import timber.log.Timber
 
-class FavDishListAdapter(private val fragment: Fragment) :
-    RecyclerView.Adapter<FavDishListAdapter.DishViewHolder>() {
+class FavDishListAdapter(private val fragment: Fragment) : RecyclerView.Adapter<FavDishListAdapter.DishViewHolder>() {
 
     private var dishes = listOf<FavDish>()
 
@@ -35,9 +34,7 @@ class FavDishListAdapter(private val fragment: Fragment) :
 
     override fun onBindViewHolder(holder: DishViewHolder, position: Int) {
         val dish = dishes[position]
-        Glide.with(fragment)
-            .load(dish.imagePath)
-            .into(holder.dishImage)
+        Glide.with(fragment).load(dish.imagePath).into(holder.dishImage)
         holder.dishTitle.text = dish.title
         holder.itemView.setOnClickListener {
             if (fragment is AllDishesFragment) {
@@ -54,8 +51,8 @@ class FavDishListAdapter(private val fragment: Fragment) :
                 popUp.menuInflater.inflate(R.menu.menu_dish_options, popUp.menu)
 
                 popUp.setOnMenuItemClickListener {
-                    when (it.itemId){
-                        R.id.action_edit_dish ->{
+                    when (it.itemId) {
+                        R.id.action_edit_dish -> {
                             Timber.e("Clicked on action_edit_dish")
                             val intent = Intent(fragment.context, AddUpdateDishActivity::class.java)
                             intent.putExtra(Constants.DISH_UPDATE, dish)
@@ -63,9 +60,7 @@ class FavDishListAdapter(private val fragment: Fragment) :
                         }
                         R.id.action_delete_dish -> {
                             Timber.e("Clicked on action_delete_dish")
-                        }
-                        R.id.action_like_dish -> {
-                            Timber.e("Clicked on action_like_dish")
+                           fragment.deleteDish(dish)
                         }
                     }
                     true
