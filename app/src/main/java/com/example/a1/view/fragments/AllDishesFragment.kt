@@ -3,6 +3,7 @@ package com.example.a1.view.fragments
 import android.content.Intent
 import android.os.Bundle
 import android.view.*
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
@@ -74,7 +75,21 @@ class AllDishesFragment : Fragment() {
     }
 
     fun deleteDish(dish: FavDish) {
-        mFavDishViewModel.delete(dish)
+        val alert = AlertDialog.Builder(requireActivity())
+        alert.apply {
+            setTitle(resources.getString(R.string.delete_dish))
+            setMessage(getString(R.string.delete_confirm_message) + dish.title)
+            setIcon(android.R.drawable.ic_delete)
+            setPositiveButton(resources.getString(R.string.lbl_yes)) { dialogInterface, _ ->
+                mFavDishViewModel.delete(dish)
+                dialogInterface.dismiss()
+            }
+            setNegativeButton(resources.getString(R.string.lbl_cancel)) { dialogInterface, _ ->
+                dialogInterface.dismiss()
+            }
+            setCancelable(false)
+            show()
+        }
     }
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_add_dishes, menu)

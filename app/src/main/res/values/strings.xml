@@ -25,4 +25,7 @@
     <string name="direction_to_cook">Direction to cook</string>
     <string name="cooking_time">Cooking time</string>
     <string name="title">Title</string>
+    <string name="delete_confirm_message">\"Do you want to delete \"</string>
+    <string name="lbl_yes">Yes</string>
+    <string name="lbl_cancel">Cancel</string>
 </resources>
