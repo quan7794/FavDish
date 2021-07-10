@@ -26,6 +26,7 @@ class FavDishViewModel(private val repository: FavDishRepository): ViewModel() {
 
     val allDishesList = repository.allDishesList.asLiveData()
 
+    fun getDishByFilter(key: String, value: String) = repository.getDishesByFilter(key, value).asLiveData()
 
 }
 

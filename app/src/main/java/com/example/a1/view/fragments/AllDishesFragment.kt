@@ -24,11 +24,13 @@ import com.example.a1.view.adapers.FavDishListAdapter
 import com.example.a1.viewmodel.FavDishViewModel
 import com.example.a1.viewmodel.FavDishViewModelFactory
 import com.example.a1.viewmodel.AllDishesViewModel
+import java.util.*
 
 class AllDishesFragment : Fragment(), SelectedItem {
 
     private lateinit var allDishesViewModel: AllDishesViewModel
     private lateinit var binding: FragmentAllDishesBinding
+    private lateinit var favDishAdapter: FavDishListAdapter
     private val mFavDishViewModel: FavDishViewModel by viewModels {
         FavDishViewModelFactory((requireActivity().application as MainApplication).repository)
     }
@@ -66,7 +68,7 @@ class AllDishesFragment : Fragment(), SelectedItem {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.rvDishesList.layoutManager = GridLayoutManager(requireActivity(), 2)
-        val favDishAdapter = FavDishListAdapter(this)
+        favDishAdapter = FavDishListAdapter(this)
         binding.rvDishesList.adapter = favDishAdapter
 
         mFavDishViewModel.allDishesList.observe(viewLifecycleOwner) {
@@ -122,6 +124,16 @@ class AllDishesFragment : Fragment(), SelectedItem {
             Constants.DISH_TYPE -> {
                 filterDialog.dismiss()
                 Toast.makeText(context, "Selected: $item", Toast.LENGTH_LONG).show()
+                mFavDishViewModel.getDishByFilter(Constants.DISH_TYPE.toLowerCase(Locale.ROOT).replace("dish",""), item).observe(viewLifecycleOwner) {
+                    if (it.isNotEmpty()) {
+                        binding.rvDishesList.visibility = View.VISIBLE
+                        binding.tvNoItem.visibility = View.GONE
+                        favDishAdapter.submitList(it)
+                    } else {
+                        binding.rvDishesList.visibility = View.GONE
+                        binding.tvNoItem.visibility = View.VISIBLE
+                    }
+                }
             }
         }
     }

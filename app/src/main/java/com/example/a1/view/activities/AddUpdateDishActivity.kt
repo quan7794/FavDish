@@ -12,6 +12,8 @@ import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.navigation.findNavController
+import androidx.navigation.ui.NavigationUI
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.example.a1.MainApplication
@@ -256,5 +258,8 @@ class AddUpdateDishActivity : AppCompatActivity(), View.OnClickListener, Selecte
         customSelectionDialog.show()
     }
 
-
+    override fun onSupportNavigateUp(): Boolean {
+        onBackPressed()
+        return true
+    }
 }

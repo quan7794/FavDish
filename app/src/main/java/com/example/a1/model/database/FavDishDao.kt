@@ -21,4 +21,12 @@ interface FavDishDao {
 
     @Delete
     suspend fun deleteDish(dish: FavDish)
+
+    @Query("""Select * from fav_dishes_table where
+            case :key
+                when 'type' then type
+                when 'category' then category
+            end
+            = :value""")
+    fun getDishByFilter(key: String, value: String): Flow<List<FavDish>>
 }

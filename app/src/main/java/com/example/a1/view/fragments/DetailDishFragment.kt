@@ -29,9 +29,6 @@ class DetailDishFragment : Fragment() {
     private val favDishViewModel: FavDishViewModel by viewModels{
         FavDishViewModelFactory((requireActivity().application as MainApplication).repository)
 }
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         detailBinding = FragmentDetailDishBinding.inflate(inflater, container, false)
