@@ -1,7 +1,9 @@
 package com.example.a1.view.activities
 
 import android.Manifest
+import android.app.Activity
 import android.app.Dialog
+import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -19,7 +21,9 @@ import com.example.a1.databinding.DialogCustomListBinding
 import com.example.a1.databinding.DialogImageSelectionBinding
 import com.example.a1.model.entities.FavDish
 import com.example.a1.utils.Constants
+import com.example.a1.utils.SelectedItem
 import com.example.a1.utils.Util
+import com.example.a1.utils.Util.Companion.showDialog
 import com.example.a1.view.adapers.CustomListItemAdapter
 import com.example.a1.viewmodel.FavDishViewModel
 import com.example.a1.viewmodel.FavDishViewModelFactory
@@ -31,7 +35,7 @@ import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import timber.log.Timber
 import java.util.UUID
 
-class AddUpdateDishActivity : AppCompatActivity(), View.OnClickListener {
+class AddUpdateDishActivity : AppCompatActivity(), View.OnClickListener, SelectedItem {
     private var editDish: FavDish? = null
     private lateinit var viewBinding: ActivityAddUpdateDishBinding
     private lateinit var customSelectionDialog: Dialog
@@ -66,6 +70,7 @@ class AddUpdateDishActivity : AppCompatActivity(), View.OnClickListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        customListDialog = Dialog(this)
         viewBinding = ActivityAddUpdateDishBinding.inflate(layoutInflater)
         setContentView(viewBinding.root)
 
@@ -115,23 +120,17 @@ class AddUpdateDishActivity : AppCompatActivity(), View.OnClickListener {
                 }
                 R.id.dish_type -> {
                     Timber.d("Add dish_type")
-                    customItemsDialog(
-                        resources.getString(R.string.dish_type), Constants.getDishTypes(), Constants.DISH_TYPE
-                    )
+                    customListDialog.showDialog(this, resources.getString(R.string.dish_type), Constants.getDishTypes(), Constants.DISH_TYPE)
                     return
                 }
                 R.id.dish_category -> {
                     Timber.d("Add dish_category")
-                    customItemsDialog(
-                        resources.getString(R.string.dish_category), Constants.getDishCategories(), Constants.DISH_CATEGORY
-                    )
+                    customListDialog.showDialog(this, resources.getString(R.string.dish_category), Constants.getDishCategories(), Constants.DISH_CATEGORY)
                     return
                 }
                 R.id.cooking_time -> {
                     Timber.d("Add cooking_time")
-                    customItemsDialog(
-                        resources.getString(R.string.select_cooking_time), Constants.getDishCookTime(), Constants.DISH_COOKING_TIME
-                    )
+                    customListDialog.showDialog(this, resources.getString(R.string.select_cooking_time), Constants.getDishCookTime(), Constants.DISH_COOKING_TIME)
                     return
                 }
                 R.id.add_dish -> {
@@ -191,7 +190,7 @@ class AddUpdateDishActivity : AppCompatActivity(), View.OnClickListener {
         return favDish.category != "" && favDish.cookingTime != "" && favDish.directionToCook != "" && favDish.imagePath != "" && favDish.ingredients != "" && favDish.type != "" && favDish.title != ""
     }
 
-    fun selectedListItem(item: String, selection: String) {
+    override fun onSelected(item: String, selection: String) {
         when (selection) {
             Constants.DISH_TYPE -> {
                 customListDialog.dismiss()
@@ -257,14 +256,5 @@ class AddUpdateDishActivity : AppCompatActivity(), View.OnClickListener {
         customSelectionDialog.show()
     }
 
-    private fun customItemsDialog(title: String, itemsList: List<String>, selection: String) {
-        customListDialog = Dialog(this)
-        val binding: DialogCustomListBinding = DialogCustomListBinding.inflate(layoutInflater)
-        customListDialog.setContentView(binding.root)
-        binding.dialogTitle.text = title
-        binding.dialogContent.layoutManager = LinearLayoutManager(this)
-        val adapter = CustomListItemAdapter(this, itemsList, selection)
-        binding.dialogContent.adapter = adapter
-        customListDialog.show()
-    }
+
 }

@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textColor="#263238"
-        android:textSize="@dimen/_16sdp"
+        android:textSize="@dimen/_20ssp"
         tools:text="Dialog Title" />
 
     <androidx.recyclerview.widget.RecyclerView

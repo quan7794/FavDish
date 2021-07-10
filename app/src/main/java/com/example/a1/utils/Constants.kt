@@ -1,5 +1,9 @@
 package com.example.a1.utils
 
+interface SelectedItem {
+    fun onSelected(item: String, selection: String)
+}
+
 object Constants {
     const val DISH_TYPE = "DishType"
     const val DISH_CATEGORY = "DishCategory"

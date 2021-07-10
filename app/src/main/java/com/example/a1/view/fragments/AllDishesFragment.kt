@@ -1,8 +1,10 @@
 package com.example.a1.view.fragments
 
+import android.app.Dialog
 import android.content.Intent
 import android.os.Bundle
 import android.view.*
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -13,6 +15,9 @@ import com.example.a1.MainApplication
 import com.example.a1.R
 import com.example.a1.databinding.FragmentAllDishesBinding
 import com.example.a1.model.entities.FavDish
+import com.example.a1.utils.Constants
+import com.example.a1.utils.SelectedItem
+import com.example.a1.utils.Util.Companion.showDialog
 import com.example.a1.view.activities.AddUpdateDishActivity
 import com.example.a1.view.activities.MainActivity
 import com.example.a1.view.adapers.FavDishListAdapter
@@ -20,12 +25,15 @@ import com.example.a1.viewmodel.FavDishViewModel
 import com.example.a1.viewmodel.FavDishViewModelFactory
 import com.example.a1.viewmodel.AllDishesViewModel
 
-class AllDishesFragment : Fragment() {
+class AllDishesFragment : Fragment(), SelectedItem {
 
     private lateinit var allDishesViewModel: AllDishesViewModel
     private lateinit var binding: FragmentAllDishesBinding
     private val mFavDishViewModel: FavDishViewModel by viewModels {
         FavDishViewModelFactory((requireActivity().application as MainApplication).repository)
+    }
+    private val filterDialog: Dialog by lazy {
+        Dialog(this.requireActivity())
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,7 +42,7 @@ class AllDishesFragment : Fragment() {
     }
 
     fun goToFavDishDetail(favDish: FavDish) {
-        findNavController().navigate( AllDishesFragmentDirections.actionNavigationAllDishesToNavigationDetailDish(favDish))
+        findNavController().navigate(AllDishesFragmentDirections.actionNavigationAllDishesToNavigationDetailDish(favDish))
         if (requireActivity() is MainActivity) {
             (activity as MainActivity).hideBottomNav()
         }
@@ -48,8 +56,7 @@ class AllDishesFragment : Fragment() {
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-    ): View {
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         allDishesViewModel = ViewModelProvider(this).get(AllDishesViewModel::class.java)
         binding = FragmentAllDishesBinding.inflate(inflater, container, false)
 
@@ -91,6 +98,7 @@ class AllDishesFragment : Fragment() {
             show()
         }
     }
+
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_add_dishes, menu)
         super.onCreateOptionsMenu(menu, inflater)
@@ -102,7 +110,19 @@ class AllDishesFragment : Fragment() {
                 startActivity(Intent(requireActivity(), AddUpdateDishActivity::class.java))
                 return true
             }
+            R.id.action_dish_filter -> {
+                filterDialog.showDialog(requireActivity(),"Select type of the dish you want to show.", Constants.getDishTypes(), Constants.DISH_TYPE, this)
+            }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    override fun onSelected(item: String, selection: String) {
+        when (selection) {
+            Constants.DISH_TYPE -> {
+                filterDialog.dismiss()
+                Toast.makeText(context, "Selected: $item", Toast.LENGTH_LONG).show()
+            }
+        }
     }
 }
