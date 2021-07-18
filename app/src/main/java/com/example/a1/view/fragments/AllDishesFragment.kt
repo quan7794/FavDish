@@ -8,7 +8,6 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.a1.MainApplication
@@ -23,12 +22,10 @@ import com.example.a1.view.activities.MainActivity
 import com.example.a1.view.adapers.FavDishListAdapter
 import com.example.a1.viewmodel.FavDishViewModel
 import com.example.a1.viewmodel.FavDishViewModelFactory
-import com.example.a1.viewmodel.AllDishesViewModel
 import java.util.*
 
 class AllDishesFragment : Fragment(), SelectedItem {
 
-    private lateinit var allDishesViewModel: AllDishesViewModel
     private lateinit var binding: FragmentAllDishesBinding
     private lateinit var favDishAdapter: FavDishListAdapter
     private val mFavDishViewModel: FavDishViewModel by viewModels {
@@ -59,7 +56,6 @@ class AllDishesFragment : Fragment(), SelectedItem {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        allDishesViewModel = ViewModelProvider(this).get(AllDishesViewModel::class.java)
         binding = FragmentAllDishesBinding.inflate(inflater, container, false)
 
         return binding.root

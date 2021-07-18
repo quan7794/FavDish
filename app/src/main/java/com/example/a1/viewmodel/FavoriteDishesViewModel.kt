@@ -1,7 +1,7 @@
 package com.example.a1.viewmodel
 
 import androidx.lifecycle.*
-import com.example.a1.model.database.FavDishRepository
+import com.example.a1.model.repository.FavDishRepository
 import java.lang.IllegalArgumentException
 
 class FavoriteDishesViewModel(repository: FavDishRepository) : ViewModel() {

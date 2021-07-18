@@ -4,11 +4,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
-import com.example.a1.model.database.FavDishRepository
+import com.example.a1.model.repository.FavDishRepository
 import com.example.a1.model.entities.FavDish
 import kotlinx.coroutines.launch
 import java.lang.IllegalArgumentException
-import kotlin.concurrent.thread
 
 class FavDishViewModel(private val repository: FavDishRepository): ViewModel() {
 

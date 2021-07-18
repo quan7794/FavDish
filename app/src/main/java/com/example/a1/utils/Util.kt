@@ -103,6 +103,19 @@ class Util {
 
 @BindingAdapter("setFavoriteIcon")
 fun setFavoriteIcon(view: ImageView, isFavorite: Boolean) {
+    Timber.e("setFavoriteIcon: isFavorite: $isFavorite")
     if (isFavorite) view.setImageResource(R.drawable.ic_favorite_selected)
     else view.setImageResource(R.drawable.ic_favorite_unselected)
+}
+
+enum class Status {
+    SUCCESS, ERROR, LOADING
+}
+
+data class Resource<out T>(val status: Status, val data: T? = null, val message: String? = null) {
+    companion object {
+        fun <T> success(data: T): Resource<T> = Resource(Status.SUCCESS, data)
+        fun <T> error(data: T? = null, message: String) = Resource(Status.ERROR, data, message)
+        fun <T> loading(data: T? = null) = Resource(Status.LOADING, data)
+    }
 }

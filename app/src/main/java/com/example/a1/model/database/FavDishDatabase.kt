@@ -9,8 +9,9 @@ import com.example.a1.model.entities.FavDish
 @Database(entities = [FavDish::class], version = 2, exportSchema = true)
 abstract class FavDishDatabase : RoomDatabase() {
     abstract fun favDishDao() : FavDishDao
+
     companion object {
-        private val databaseName = "fav_dish_database"
+        private const val databaseName = "fav_dish_database"
 
         @Volatile
         private var INSTANCE: FavDishDatabase? = null

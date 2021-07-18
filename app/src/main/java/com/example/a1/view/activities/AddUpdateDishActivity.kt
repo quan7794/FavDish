@@ -1,9 +1,7 @@
 package com.example.a1.view.activities
 
 import android.Manifest
-import android.app.Activity
 import android.app.Dialog
-import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -12,21 +10,16 @@ import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
-import androidx.navigation.findNavController
-import androidx.navigation.ui.NavigationUI
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.example.a1.MainApplication
 import com.example.a1.R
 import com.example.a1.databinding.ActivityAddUpdateDishBinding
-import com.example.a1.databinding.DialogCustomListBinding
 import com.example.a1.databinding.DialogImageSelectionBinding
 import com.example.a1.model.entities.FavDish
 import com.example.a1.utils.Constants
 import com.example.a1.utils.SelectedItem
 import com.example.a1.utils.Util
 import com.example.a1.utils.Util.Companion.showDialog
-import com.example.a1.view.adapers.CustomListItemAdapter
 import com.example.a1.viewmodel.FavDishViewModel
 import com.example.a1.viewmodel.FavDishViewModelFactory
 import com.karumi.dexter.Dexter
