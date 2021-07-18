@@ -38,11 +38,6 @@ class RandomDishFragment : Fragment() {
         val factory = RandomDishViewModelFactory((requireActivity().application as MainApplication).repository)
         _binding = FragmentRandomDishBinding.inflate(inflater, container, false)
         randomDishViewModel = ViewModelProvider(this, factory).get(RandomDishViewModel::class.java)
-        return binding.root
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
         binding.dishFavorite.setOnClickListener {
             if (binding.dishFavorite.isClickable) {
                 binding.randomDish?.let {
@@ -54,7 +49,19 @@ class RandomDishFragment : Fragment() {
                 }
             }
         }
+        binding.swipeLayout.setOnRefreshListener {
+            getRandomDish()
+        }
 
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        getRandomDish()
+    }
+
+    private fun getRandomDish() {
         randomDishViewModel.getRandomDishes().observe(viewLifecycleOwner) {
             when (it.status) {
                 Status.LOADING -> {
@@ -68,12 +75,14 @@ class RandomDishFragment : Fragment() {
                     binding.dishIngredient.text = it.message
                     binding.dishFavorite.isClickable = false
                     Toast.makeText(context, "Error when get random dish.", Toast.LENGTH_LONG).show()
+                    if (binding.swipeLayout.isRefreshing) binding.swipeLayout.isRefreshing = false
                 }
                 Status.SUCCESS -> {
                     binding.progressBar.visibility = View.GONE
                     binding.scrollView2.visibility = View.VISIBLE
                     binding.dishFavorite.isClickable = true
                     it.data?.let { data -> updateDishData(data.recipes[0]) }
+                    if (binding.swipeLayout.isRefreshing) binding.swipeLayout.isRefreshing = false
                 }
             }
         }
