@@ -2,6 +2,7 @@ package com.example.a1.view.fragments
 
 import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.text.Html
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -89,7 +90,6 @@ class RandomDishFragment : Fragment() {
     }
 
     private fun updateDishData(data: Recipe) {
-        Toast.makeText(context, "randomDish - title: $data", Toast.LENGTH_LONG).show()
         Glide.with(this@RandomDishFragment).load(data.image).listener(imageListener()).into(binding.dishImage)
         data.apply {
             binding.randomDish = FavDish(
@@ -100,11 +100,16 @@ class RandomDishFragment : Fragment() {
                 category = "Other",
                 ingredients = getIngredients(extendedIngredients),
                 cookingTime = readyInMinutes.toString(),
-                directionToCook = instructions,
+                directionToCook = instructions.htmlToText(),
                 favoriteDish = false
             )
             binding.dishTitle.isSelected = true
         }
+        Toast.makeText(context, "randomDish - randomData: ${binding.randomDish}", Toast.LENGTH_LONG).show()
+    }
+
+    private fun String.htmlToText() : String {
+        return Html.fromHtml(this, Html.FROM_HTML_MODE_COMPACT).toString()
     }
 
     private fun getIngredients(ingredients: List<ExtendedIngredient>): String {
