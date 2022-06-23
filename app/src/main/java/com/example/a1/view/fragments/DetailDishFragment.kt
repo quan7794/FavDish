@@ -82,9 +82,9 @@ class DetailDishFragment : Fragment() {
             detailViewModel.setDetailDish(dish)
         }
 
-        detailViewModel.dish.observe(viewLifecycleOwner, {
+        detailViewModel.dish.observe(viewLifecycleOwner) {
             detailBinding.dish = it
-        })
+        }
     }
 
     private fun init(dish: FavDish) {

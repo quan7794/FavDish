@@ -132,6 +132,16 @@ class RandomDishFragment : Fragment() {
                     palette?.dominantSwatch?.rgb?.let {
                         binding.detailParentView.setBackgroundColor(it)
                     }
+                    palette?.dominantSwatch?.bodyTextColor?.let {
+                        binding.apply {
+                            dishTitle.setTextColor(it)
+                            cookingTime.setTextColor(it)
+                            directionToCook.setTextColor(it)
+                            dishIngredient.setTextColor(it)
+                            dishCategory.setTextColor(it)
+                            dishType.setTextColor(it)
+                        }
+                    }
                 }
                 return false
             }
