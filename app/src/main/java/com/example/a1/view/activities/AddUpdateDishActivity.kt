@@ -3,6 +3,7 @@ package com.example.a1.view.activities
 import android.Manifest
 import android.app.Dialog
 import android.content.Intent
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.MediaStore
@@ -19,9 +20,11 @@ import com.example.a1.model.entities.FavDish
 import com.example.a1.utils.Constants
 import com.example.a1.utils.SelectedItem
 import com.example.a1.utils.Util
+import com.example.a1.utils.Util.Companion.loadImage
 import com.example.a1.utils.Util.Companion.showDialog
 import com.example.a1.viewmodel.FavDishViewModel
 import com.example.a1.viewmodel.FavDishViewModelFactory
+import com.isseiaoki.simplecropview.callback.LoadCallback
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.MultiplePermissionsReport
 import com.karumi.dexter.PermissionToken
@@ -36,6 +39,8 @@ class AddUpdateDishActivity : AppCompatActivity(), View.OnClickListener, Selecte
     private lateinit var customSelectionDialog: Dialog
     private lateinit var customListDialog: Dialog
     private var isEdit = false
+    private var currentImgUri: Uri? = null
+
     private val mViewModel: FavDishViewModel by viewModels {
         FavDishViewModelFactory((application as MainApplication).repository)
     }
@@ -55,6 +60,7 @@ class AddUpdateDishActivity : AppCompatActivity(), View.OnClickListener, Selecte
 
     private val galleryResultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
         it.data?.data?.let { imageUri ->
+            currentImgUri = imageUri
             val imageName = UUID.randomUUID().toString()
             mImagePath = "${applicationContext.filesDir.absolutePath}/favDish/$imageName.jpg"
             Timber.e(mImagePath)
@@ -79,6 +85,7 @@ class AddUpdateDishActivity : AppCompatActivity(), View.OnClickListener, Selecte
 
     private fun initData() {
         viewBinding.dishAddImage.setOnClickListener(this)
+        viewBinding.dishEditImage.setOnClickListener(this)
         viewBinding.dishType.setOnClickListener(this)
         viewBinding.dishCategory.setOnClickListener(this)
         viewBinding.cookingTime.setOnClickListener(this)
@@ -105,6 +112,14 @@ class AddUpdateDishActivity : AppCompatActivity(), View.OnClickListener, Selecte
         if (isEdit) supportActionBar?.title = getString(R.string.edit_dish)
     }
 
+    private val loadCropImageCallback = object : LoadCallback {
+        override fun onError(e: Throwable?) {
+            Timber.e("Load crop image error: $e")
+            viewBinding.cropDishImage.visibility = View.GONE
+        }
+        override fun onSuccess() { Timber.d("Load crop image success!!!") }
+    }
+
     override fun onClick(v: View?) {
         if (v != null) {
             when (v.id) {
@@ -113,6 +128,15 @@ class AddUpdateDishActivity : AppCompatActivity(), View.OnClickListener, Selecte
                     customSelectionDialog()
                     return
                 }
+                R.id.dish_edit_image -> {
+                    Timber.d("Edit image")
+                    viewBinding.cropDishImage.apply {
+                        visibility = View.VISIBLE
+                        load(currentImgUri).execute(loadCropImageCallback)
+                    }
+
+                }
+
                 R.id.dish_type -> {
                     Timber.d("Add dish_type")
                     customListDialog.showDialog(this, resources.getString(R.string.dish_type), Constants.getDishTypes(), Constants.DISH_TYPE)
@@ -230,9 +254,8 @@ class AddUpdateDishActivity : AppCompatActivity(), View.OnClickListener, Selecte
         }
         binding.gallerySelect.setOnClickListener {
             Toast.makeText(this, "Gallery select", Toast.LENGTH_SHORT).show()
-            Dexter.withContext(this).withPermissions(
-                Manifest.permission.READ_EXTERNAL_STORAGE
-            ).withListener(object : MultiplePermissionsListener {
+            Dexter.withContext(this).withPermissions(Manifest.permission.READ_EXTERNAL_STORAGE)
+                .withListener(object : MultiplePermissionsListener {
                 override fun onPermissionsChecked(report: MultiplePermissionsReport) {
                     if (report.areAllPermissionsGranted()) {
                         val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)

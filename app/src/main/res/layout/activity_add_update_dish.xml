@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
     tools:context=".view.activities.AddUpdateDishActivity">
 
     <ScrollView
@@ -133,9 +134,36 @@
                     android:layout_gravity="end|bottom"
                     android:layout_marginEnd="@dimen/_16sdp"
                     android:layout_marginBottom="@dimen/_16sdp"
+                    app:srcCompat="@android:drawable/ic_menu_add" />
+                <ImageView
+                    android:id="@+id/dish_edit_image"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end|top"
+                    android:layout_marginEnd="@dimen/_16sdp"
+                    android:layout_marginTop="@dimen/_16sdp"
                     app:srcCompat="@android:drawable/ic_menu_edit" />
-            </FrameLayout>
 
+                <com.isseiaoki.simplecropview.CropImageView
+                    android:id="@+id/crop_dish_image"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:visibility="gone"
+                    custom:scv_crop_mode="fit_image"
+                    custom:scv_background_color="@color/black"
+                    custom:scv_handle_color="@color/cardview_light_background"
+                    custom:scv_guide_color="@color/cardview_light_background"
+                    custom:scv_overlay_color="@color/design_default_color_on_primary"
+                    custom:scv_frame_color="@color/cardview_light_background"
+                    custom:scv_handle_size="14dp"
+                    custom:scv_touch_padding="8dp"
+                    custom:scv_handle_show_mode="show_always"
+                    custom:scv_guide_show_mode="show_always"
+                    custom:scv_min_frame_size="50dp"
+                    custom:scv_frame_stroke_weight="1dp"
+                    custom:scv_guide_stroke_weight="1dp"
+                    tools:visibility="visible" />
+            </FrameLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>

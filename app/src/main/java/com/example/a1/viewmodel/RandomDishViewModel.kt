@@ -30,7 +30,7 @@ class RandomDishViewModel(private val repository: FavDishRepository) : ViewModel
 }
 
 class RandomDishViewModelFactory(private val repository: FavDishRepository): ViewModelProvider.Factory {
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(RandomDishViewModel::class.java))
             return RandomDishViewModel(repository) as T
         throw IllegalArgumentException("Unknown this class!")

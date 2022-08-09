@@ -10,9 +10,8 @@ class FavoriteDishesViewModel(repository: FavDishRepository) : ViewModel() {
 }
 
 
-@Suppress("UNCHECKED_CAST")
 class FavoriteDishesViewModelFactory(private val repository: FavDishRepository): ViewModelProvider.Factory{
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(FavoriteDishesViewModel::class.java)) {
             return FavoriteDishesViewModel(repository) as T
         }

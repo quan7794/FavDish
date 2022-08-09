@@ -1,6 +1,5 @@
 package com.example.a1.model.repository
 
-import androidx.annotation.MainThread
 import androidx.annotation.WorkerThread
 import com.example.a1.model.database.FavDishDao
 import com.example.a1.model.entities.FavDish
